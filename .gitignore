@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+.env
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+ml/option-2-python/data/
+ml/option-2-python/saved_model/
+ml/option-2-python/tfjs_model/
+ml/option-2-python/*.h5

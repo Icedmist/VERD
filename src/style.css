@@ -1,0 +1,372 @@
+/* ═══════════════════════════════════════════════
+   VERD — Design System & Animations
+   ═══════════════════════════════════════════════ */
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #404040;
+}
+
+/* Base transitions */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, box-shadow, opacity, transform, color;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Pulse ring */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(26, 175, 99, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(26, 175, 99, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(26, 175, 99, 0);
+  }
+}
+
+.pulse-ring {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Scan sweep */
+@keyframes scan-sweep {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+
+  50% {
+    top: calc(100% - 2px);
+    opacity: 0.6;
+  }
+
+  100% {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+.scan-sweep {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #1aaf63 40%, #3ec97e 50%, #1aaf63 60%, transparent 100%);
+  animation: scan-sweep 2.5s ease-in-out infinite;
+  box-shadow: 0 0 12px rgba(26, 175, 99, 0.5);
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+/* Stagger children */
+.stagger>* {
+  opacity: 0;
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+.stagger>*:nth-child(1) {
+  animation-delay: 0.04s;
+}
+
+.stagger>*:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.stagger>*:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.stagger>*:nth-child(4) {
+  animation-delay: 0.16s;
+}
+
+.stagger>*:nth-child(5) {
+  animation-delay: 0.2s;
+}
+
+.stagger>*:nth-child(6) {
+  animation-delay: 0.24s;
+}
+
+.stagger>*:nth-child(7) {
+  animation-delay: 0.28s;
+}
+
+.stagger>*:nth-child(8) {
+  animation-delay: 0.32s;
+}
+
+/* Shimmer loading */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #171717 25%, #262626 50%, #171717 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Spin */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: spin 1.5s linear infinite;
+}
+
+/* Progress fill */
+@keyframes progressFill {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+.progress-fill {
+  animation: progressFill 3s ease-in-out forwards;
+}
+
+/* Glass surface */
+.glass {
+  background: rgba(23, 23, 23, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(38, 38, 38, 0.8);
+}
+
+.glass-elevated {
+  background: rgba(23, 23, 23, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(64, 64, 64, 0.4);
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid #1aaf63;
+  outline-offset: 2px;
+}
+
+/* Offline banner */
+.offline-banner {
+  background: #dc2626;
+  color: white;
+  text-align: center;
+  padding: 6px 16px;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+}
+
+/* Sidebar nav */
+.nav-link-active {
+  background: rgba(26, 175, 99, 0.08);
+  border-left: 2px solid #1aaf63;
+  color: #3ec97e;
+}
+
+.nav-link {
+  border-left: 2px solid transparent;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-left-color: rgba(255, 255, 255, 0.1);
+  color: #e5e5e5;
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Metric dot variants */
+.dot-excellent {
+  background: #1aaf63;
+}
+
+.dot-good {
+  background: #84cc16;
+}
+
+.dot-warning {
+  background: #eab308;
+}
+
+.dot-danger {
+  background: #ef4444;
+}
+
+/* Ring variants for crop cards */
+.ring-excellent {
+  border-color: rgba(26, 175, 99, 0.2);
+}
+
+.ring-good {
+  border-color: rgba(132, 204, 22, 0.2);
+}
+
+.ring-warning {
+  border-color: rgba(234, 179, 8, 0.2);
+}
+
+.ring-danger {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Input styling */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background: #0a0a0a;
+  border: 1px solid #262626;
+  color: #e5e5e5;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  border-color: #1aaf63;
+  box-shadow: 0 0 0 3px rgba(26, 175, 99, 0.1);
+}
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.badge-success {
+  background: rgba(26, 175, 99, 0.12);
+  color: #3ec97e;
+}
+
+.badge-warning {
+  background: rgba(234, 179, 8, 0.12);
+  color: #eab308;
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.badge-neutral {
+  background: rgba(115, 115, 115, 0.12);
+  color: #a3a3a3;
+}
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+  padding: 10px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: #1aaf63;
+  color: white;
+  box-shadow: 0 1px 3px rgba(26, 175, 99, 0.3);
+}
+
+.btn-primary:hover {
+  background: #0d8d4e;
+}
+
+.btn-secondary {
+  background: #171717;
+  color: #d4d4d4;
+  border: 1px solid #262626;
+}
+
+.btn-secondary:hover {
+  background: #262626;
+  border-color: #404040;
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
