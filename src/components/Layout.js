@@ -12,6 +12,7 @@ window.LayoutComponent = {
       { path: '#/dashboard', icon: Icons.dashboard, label: 'Dashboard', roles: ['farmer', 'admin'] },
       { path: '#/scan', icon: Icons.scan, label: 'Scan', roles: ['farmer', 'admin'] },
       { path: '#/marketplace', icon: Icons.lightbulb, label: 'Insights', roles: ['farmer', 'admin'] },
+      { path: '#/train', icon: Icons.brain, label: 'Train Model', roles: ['farmer', 'admin'] },
       { path: '#/admin', icon: Icons.settings, label: 'Admin Panel', roles: ['admin'] },
     ];
 

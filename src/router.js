@@ -108,6 +108,12 @@ window.Router = (() => {
             MarketplacePage.bindEvents?.();
         });
 
+        on('#/train', (app) => {
+            app.innerHTML = LayoutComponent.render(TrainModelPage.render(), '#/train');
+            LayoutComponent.bindEvents();
+            TrainModelPage.afterRender?.();
+        });
+
         on('#/404', (app) => {
             if (AppState.get('isAuthenticated')) {
                 app.innerHTML = LayoutComponent.render(NotFoundPage.render(), '');
