@@ -4,6 +4,64 @@ All notable changes to VERD are documented here.
 
 ---
 
+## [1.3.0] — 2026-03-02
+
+### Added — Standalone Features (Ship-Ready)
+
+**New Files:**
+
+- `src/components/ReportCard.js` — Canvas-based report card generator
+  - Renders branded PNG image (1600×2200 retina canvas)
+  - Header: VERD logo, "SCAN REPORT", timestamp, scan ID
+  - Severity banner (green/yellow/red) with confidence percentage
+  - Condition card with description and accent bar
+  - Confidence progress bar
+  - ML model data (version, inference time, processing type)
+  - Numbered recommendations with green accent circles
+  - Soil metrics row (N, P, K, pH, Organic Matter)
+  - Footer with VERD branding
+  - WhatsApp share: formats summary text and opens `wa.me` URL
+
+- `src/pages/ScanHistory.js` — Persistent scan history
+  - `ScanHistoryDB`: IndexedDB wrapper with `save()`, `getAll()`, `get()`, `remove()`
+  - Stats bar: Total Scans / Healthy / Critical
+  - Color-coded scan cards (clickable to re-view results)
+  - Download report and delete buttons per card (visible on hover)
+  - Empty state with illustration
+
+- `sw.js` — Service Worker
+  - Cache-first strategy for app shell (28 files)
+  - Network-first for Firebase, CDN, and API calls
+  - Old cache cleanup on activation
+
+- `manifest.json` — PWA manifest
+  - Installable to homescreen
+  - Standalone display mode
+  - VERD green theme color
+
+**Modified Files:**
+
+- `src/pages/Scan.js`
+  - Scans auto-save to IndexedDB via `ScanHistoryDB.save()`
+
+- `src/pages/ScanResults.js`
+  - Added "Download" button → generates and saves branded PNG
+  - Added "WhatsApp" button → opens formatted share message
+  - Both buttons visible in header alongside existing share
+
+- `src/components/Layout.js`
+  - Added "History" nav item (clock icon) between Scan and Insights
+
+- `src/router.js`
+  - Added `#/history` route with async afterRender
+
+- `index.html`
+  - Added `ReportCard.js` and `ScanHistory.js` script tags
+  - Fixed manifest path from `/public/manifest.json` to `/manifest.json`
+  - Added Service Worker registration script
+
+---
+
 ## [1.2.0] — 2026-03-02
 
 ### Added — Premium UI & Interactive Features
