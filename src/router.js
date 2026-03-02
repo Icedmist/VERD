@@ -108,6 +108,12 @@ window.Router = (() => {
             MarketplacePage.bindEvents?.();
         });
 
+        on('#/history', (app) => {
+            app.innerHTML = LayoutComponent.render(ScanHistoryPage.render(), '#/history');
+            LayoutComponent.bindEvents();
+            ScanHistoryPage.afterRender?.();
+        });
+
         on('#/404', (app) => {
             if (AppState.get('isAuthenticated')) {
                 app.innerHTML = LayoutComponent.render(NotFoundPage.render(), '');

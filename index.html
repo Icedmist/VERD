@@ -8,7 +8,7 @@
     content="VERD — AI-powered crop diagnostics and agricultural intelligence for African farmers" />
   <meta name="theme-color" content="#0a0a0a" />
   <title>VERD — Intelligent Crop Diagnostics</title>
-  <link rel="manifest" href="/public/manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -91,6 +91,7 @@
   <script src="src/components/Modal.js"></script>
   <script src="src/components/NeuralNetAnim.js"></script>
   <script src="src/components/VoiceScanner.js"></script>
+  <script src="src/components/ReportCard.js"></script>
   <script src="src/components/Layout.js"></script>
   <script src="src/pages/Login.js"></script>
   <script src="src/pages/Register.js"></script>
@@ -98,11 +99,20 @@
   <script src="src/pages/AdminDashboard.js"></script>
   <script src="src/pages/Scan.js"></script>
   <script src="src/pages/ScanResults.js"></script>
+  <script src="src/pages/ScanHistory.js"></script>
   <script src="src/pages/Marketplace.js"></script>
   <script src="src/pages/NotFound.js"></script>
   <script src="src/router.js"></script>
   <script src="src/main.js"></script>
   <script src="src/utils/offline.js"></script>
+  <script>
+    // Register Service Worker for offline support
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').then(() => {
+        console.log('[VERD] Service Worker registered');
+      }).catch(err => console.warn('[VERD] SW registration failed:', err));
+    }
+  </script>
 </body>
 
 </html>

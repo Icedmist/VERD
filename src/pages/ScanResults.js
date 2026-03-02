@@ -33,9 +33,11 @@ window.ScanResultsPage = {
             </div>
             <p class="text-surface-600 text-sm font-mono">ID: ${result.id} &middot; ${DOM.formatDate(result.timestamp)}</p>
           </div>
-          <div class="flex gap-3">
-            <a href="#/scan" class="btn btn-secondary">${Icons.scan} New Scan</a>
-            <button id="share-result-btn" class="btn btn-primary">${Icons.share} Share</button>
+          <div class="flex flex-wrap gap-2">
+            <a href="#/scan" class="btn btn-secondary text-sm">${Icons.scan} New Scan</a>
+            <button id="download-report-btn" class="btn btn-secondary text-sm">${Icons.download} Download</button>
+            <button id="whatsapp-share-btn" class="btn btn-secondary text-sm" style="color: #25D366; border-color: rgba(37, 211, 102, 0.2);">${Icons.share} WhatsApp</button>
+            <button id="share-result-btn" class="btn btn-primary text-sm">${Icons.share} Share</button>
           </div>
         </div>
 
@@ -212,7 +214,22 @@ window.ScanResultsPage = {
 
   afterRender() {
     LayoutComponent.setTitle('Results', 'AI Analysis Report');
+    const result = AppState.get('lastScanResult');
+
     document.getElementById('share-result-btn')?.addEventListener('click', () => DOM.toast('Report link copied to clipboard', 'success'));
+
+    document.getElementById('download-report-btn')?.addEventListener('click', async () => {
+      if (result && typeof ReportCard !== 'undefined') {
+        DOM.toast('Generating report...', 'info');
+        await ReportCard.download(result);
+      }
+    });
+
+    document.getElementById('whatsapp-share-btn')?.addEventListener('click', () => {
+      if (result && typeof ReportCard !== 'undefined') {
+        ReportCard.shareWhatsApp(result);
+      }
+    });
     document.getElementById('alert-officer-btn')?.addEventListener('click', () => {
       ModalComponent.show({
         title: 'Contact Extension Officer',

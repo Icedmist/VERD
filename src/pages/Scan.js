@@ -262,6 +262,10 @@ window.ScanPage = {
         const result = await ScannerService.analyze(selectedFile);
         await FirestoreService.saveScan(result);
         AppState.set('lastScanResult', result);
+        // Save to local scan history
+        if (typeof ScanHistoryDB !== 'undefined') {
+          ScanHistoryDB.save(result).catch(e => console.warn('[VERD] History save failed:', e));
+        }
         if (typeof VoiceScanner !== 'undefined') VoiceScanner.onScanComplete(result);
         DOM.toast('Analysis complete', 'success');
         if (this._neuralAnim) { this._neuralAnim.destroy(); this._neuralAnim = null; }
