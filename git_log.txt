@@ -1,0 +1,38 @@
+commit d4f92291012c321d0eea0967b63928982b369378
+Author: Bot <bot@example.com>
+Date:   Wed Mar 4 13:30:15 2026 +0100
+
+    feat: VERD app redesign, Supabase integration and new features
+
+commit 0eadedcec3af866cb50ac19f8d3d1bcb3716792a
+Author: icedmist <pharmnaseer@gmail.com>
+Date:   Mon Mar 2 13:16:14 2026 +0100
+
+    feat: Premium landing page with hero, features, how-it-works, tech stack, CTA
+
+commit f5db67189c5786873a779ba744cfd2f7ce18701b
+Author: icedmist <pharmnaseer@gmail.com>
+Date:   Mon Mar 2 12:49:44 2026 +0100
+
+    docs: Update WALKTHROUGH.md + CHANGELOG.md with v1.3.0 standalone features
+
+commit dab4c247ab666c96c346316c4a8f298cb3e9bd28
+Author: icedmist <pharmnaseer@gmail.com>
+Date:   Mon Mar 2 12:47:28 2026 +0100
+
+    feat: PWA + Scan History + Download Report + WhatsApp Share
+    
+    - Added ReportCard.js: Canvas-based branded report card PNG generator
+    - Added ScanHistory.js: IndexedDB persistence + History timeline page
+    - Added sw.js: Service Worker for full offline support
+    - Added manifest.json: Installable PWA manifest
+    - Added History route and sidebar nav link
+    - Added Download Report + WhatsApp Share buttons to scan results
+    - Scans auto-save to IndexedDB for persistent history
+    - Updated index.html with all new scripts and SW registration
+
+commit a1edced6b79209ae364d9181e91b5b3cd1e8a6c4
+Author: icedmist <pharmnaseer@gmail.com>
+Date:   Mon Mar 2 12:35:18 2026 +0100
+
+    docs: Add comprehensive WALKTHROUGH.md and CHANGELOG.md

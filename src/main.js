@@ -5,14 +5,26 @@
 (function () {
     'use strict';
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
         console.log('VERD: Initializing...');
 
+        // Restore theme preference
+        const savedTheme = localStorage.getItem('verd-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // Initialize Supabase service
+        SupabaseService.getClient();
+
+        // Initialize auth
         AuthService.init();
-        const restored = AuthService.restoreDemoSession();
+
+        // Try to restore Supabase session first, then demo session
+        const supabaseRestored = await AuthService.restoreSupabaseSession();
+        const demoRestored = !supabaseRestored && AuthService.restoreDemoSession();
+
         Router.init();
 
-        if (!restored && !AppState.get('isAuthenticated')) {
+        if (!supabaseRestored && !demoRestored && !AppState.get('isAuthenticated')) {
             window.location.hash = '#/login';
         }
 
@@ -25,8 +37,8 @@
             }
         });
 
-        // Preload MobileNet model in background
-        if (typeof mobilenet !== 'undefined') {
+        // Preload ML model in background
+        if (typeof tf !== 'undefined') {
             setTimeout(() => {
                 ScannerService.loadModel().then(() => {
                     console.log('VERD: ML model preloaded');
@@ -34,6 +46,6 @@
             }, 3000);
         }
 
-        console.log('VERD: Ready');
+        console.log('VERD: Ready (Supabase backend)');
     });
 })();

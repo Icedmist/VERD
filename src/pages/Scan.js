@@ -75,8 +75,8 @@ window.ScanPage = {
             <div class="glass-elevated rounded-2xl p-4 flex items-start gap-3">
               <div class="w-9 h-9 rounded-xl bg-verd-950/30 flex items-center justify-center text-verd-500 flex-shrink-0">${Icons.sized(Icons.brain, 16)}</div>
               <div>
-                <p class="text-xs font-bold text-surface-300">ML Engine: TensorFlow.js + MobileNet v2</p>
-                <p class="text-xs text-surface-600 mt-0.5">Neural network inference runs locally in your browser. No data leaves your device.</p>
+                <p class="text-xs font-bold text-surface-300">ML Engine: TensorFlow.js — PlantVillage CNN (49 classes)</p>
+                <p class="text-xs text-surface-600 mt-0.5">Neural network inference runs locally. 14 crop species, 49 disease classes, powered by PlantVillage dataset.</p>
               </div>
               <div class="ml-auto flex-shrink-0">
                 <div class="w-2 h-2 rounded-full bg-verd-500 pulse-ring"></div>

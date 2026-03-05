@@ -1,0 +1,27 @@
+{
+  "name": "verd",
+  "version": "2.0.0",
+  "description": "VERD — AI-powered crop diagnostics and agricultural intelligence for African farmers",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y live-server --port=3000 --no-browser",
+    "train": "node train_model.js",
+    "seed": "node seed_supabase.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "@tensorflow/tfjs": "^4.17.0",
+    "@tensorflow/tfjs-node": "^4.22.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "keywords": [
+    "agriculture",
+    "ai",
+    "tensorflow",
+    "plant-disease",
+    "crop-diagnostics"
+  ],
+  "license": "MIT"
+}

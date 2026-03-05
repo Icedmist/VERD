@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
     content="VERD — AI-powered crop diagnostics and agricultural intelligence for African farmers" />
-  <meta name="theme-color" content="#0a0a0a" />
+  <meta name="theme-color" content="#0a0e1a" />
   <title>VERD — Intelligent Crop Diagnostics</title>
   <link rel="manifest" href="/manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,15 +24,20 @@
             mono: ['JetBrains Mono', 'monospace']
           },
           colors: {
+            brand: {
+              cyan: 'var(--brand-cyan, #00E5FF)',
+              blue: 'var(--brand-blue, #0055FF)',
+              gold: '#FFD700',
+            },
             verd: {
-              50: '#edfcf2', 100: '#d4f7e0', 200: '#acedc6', 300: '#75dea4',
-              400: '#3ec97e', 500: '#1aaf63', 600: '#0d8d4e', 700: '#0b7141',
-              800: '#0c5935', 900: '#0a492d', 950: '#042919',
+              50: 'var(--verd-50, #edfcf2)', 100: 'var(--verd-100, #d4f7e0)', 200: 'var(--verd-200, #acedc6)', 300: 'var(--verd-300, #75dea4)',
+              400: 'var(--verd-400, #3ec97e)', 500: 'var(--verd-500, #1aaf63)', 600: 'var(--verd-600, #0d8d4e)', 700: 'var(--verd-700, #0b7141)',
+              800: 'var(--verd-800, #0c5935)', 900: 'var(--verd-900, #0a492d)', 950: 'var(--verd-950, #042919)',
             },
             surface: {
-              50: '#fafafa', 100: '#f5f5f5', 200: '#e5e5e5', 300: '#d4d4d4',
-              400: '#a3a3a3', 500: '#737373', 600: '#525252', 700: '#404040',
-              800: '#262626', 900: '#171717', 950: '#0a0a0a',
+              50: 'var(--surface-50, #f8fafc)', 100: 'var(--surface-100, #f1f5f9)', 200: 'var(--surface-200, #e2e8f0)', 300: 'var(--surface-300, #cbd5e1)',
+              400: 'var(--surface-400, #94a3b8)', 500: 'var(--surface-500, #64748b)', 600: 'var(--surface-600, #475569)', 700: 'var(--surface-700, #334155)',
+              800: 'var(--surface-800, #1e293b)', 900: 'var(--surface-900, #0f172a)', 950: 'var(--surface-950, #020617)',
             }
           },
           borderRadius: {
@@ -49,39 +54,17 @@
 <body class="bg-surface-950 text-surface-200 font-sans min-h-screen antialiased">
   <div id="app" class="min-h-screen flex flex-col"></div>
 
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-    // ═══════════════════════════════════════════
-    //  FIREBASE CONFIG — Replace with your keys
-    // ═══════════════════════════════════════════
-    const firebaseConfig = {
-      apiKey: "DEMO_API_KEY",
-      authDomain: "verd-demo.firebaseapp.com",
-      projectId: "verd-demo",
-      storageBucket: "verd-demo.appspot.com",
-      messagingSenderId: "000000000000",
-      appId: "1:000000000000:web:0000000000000000"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    window.__firebase = { auth, db, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, doc, setDoc, getDoc, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where };
-  </script>
-
-  <!-- TensorFlow.js + MobileNet for ML-powered scanning -->
+  <!-- TensorFlow.js for ML-powered scanning -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
 
   <!-- App Core -->
   <script src="src/utils/icons.js"></script>
   <script src="src/utils/dom.js"></script>
   <script src="src/state.js"></script>
+  <script src="src/services/supabase.js"></script>
   <script src="src/services/weather.js"></script>
   <script src="src/services/scanner.js"></script>
   <script src="src/services/auth.js"></script>
@@ -93,6 +76,7 @@
   <script src="src/components/VoiceScanner.js"></script>
   <script src="src/components/ReportCard.js"></script>
   <script src="src/components/Layout.js"></script>
+  <script src="src/pages/Home.js"></script>
   <script src="src/pages/Login.js"></script>
   <script src="src/pages/Register.js"></script>
   <script src="src/pages/Dashboard.js"></script>

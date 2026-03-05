@@ -1,7 +1,8 @@
 // ═══════════════════════════════════════════
-//  Scan History — IndexedDB Storage + Timeline
+//  Scan History — Supabase Storage + Timeline
 // ═══════════════════════════════════════════
 
+// Keep local IndexedDB as offline cache
 window.ScanHistoryDB = {
     _db: null,
     _dbName: 'verd_scans',
@@ -38,7 +39,7 @@ window.ScanHistoryDB = {
         return new Promise((resolve, reject) => {
             const tx = db.transaction(this._storeName, 'readonly');
             const req = tx.objectStore(this._storeName).index('timestamp').getAll();
-            req.onsuccess = () => resolve(req.result.reverse()); // newest first
+            req.onsuccess = () => resolve(req.result.reverse());
             req.onerror = () => reject(req.error);
         });
     },
@@ -70,13 +71,25 @@ window.ScanHistoryDB = {
 };
 
 // ═══════════════════════════════════════════
-//  Scan History Page
+//  Scan History Page — Data from Supabase
 // ═══════════════════════════════════════════
 
 window.ScanHistoryPage = {
     _scans: [],
 
     async loadScans() {
+        try {
+            // Try Supabase first
+            const dbScans = await DataService.getRecentScans(50);
+            if (dbScans && dbScans.length > 0) {
+                this._scans = dbScans;
+                return;
+            }
+        } catch (e) {
+            console.warn('Supabase scan fetch failed, trying local:', e);
+        }
+
+        // Fallback to IndexedDB
         try {
             this._scans = await ScanHistoryDB.getAll();
         } catch (e) {
@@ -86,7 +99,7 @@ window.ScanHistoryPage = {
 
     render() {
         return `
-      <div class="space-y-6 stagger" id="history-root">
+      <div class="space-y-6" id="history-root">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
             <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Scan History</h1>
@@ -123,7 +136,7 @@ window.ScanHistoryPage = {
                 empty.classList.remove('hidden');
                 empty.innerHTML = `
           <div class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-20 h-20 rounded-2xl bg-surface-800 flex items-center justify-center text-surface-500 mb-5 float">${Icons.sized(Icons.clock, 32)}</div>
+            <div class="w-20 h-20 rounded-2xl bg-surface-800 flex items-center justify-center text-surface-500 mb-5">${Icons.sized(Icons.clock, 32)}</div>
             <h2 class="text-lg font-bold text-surface-300 mb-2">No Scans Yet</h2>
             <p class="text-surface-600 mb-6 text-sm">Your scan history will appear here after your first analysis.</p>
             <a href="#/scan" class="btn btn-primary">${Icons.scan} Start Scanning</a>
@@ -136,22 +149,21 @@ window.ScanHistoryPage = {
         if (list) {
             list.classList.remove('hidden');
 
-            // Stats bar
             const total = this._scans.length;
-            const healthy = this._scans.filter(s => s.severity === 'none').length;
+            const healthy = this._scans.filter(s => s.severity === 'none' || (s.result || '').toLowerCase().includes('healthy')).length;
             const critical = this._scans.filter(s => s.severity === 'high').length;
 
             list.innerHTML = `
         <div class="grid grid-cols-3 gap-3 mb-4">
-          <div class="glass rounded-xl p-4 text-center metric-card">
+          <div class="glass rounded-xl p-4 text-center">
             <p class="text-2xl font-black text-white font-mono">${total}</p>
             <p class="text-xs text-surface-600">Total Scans</p>
           </div>
-          <div class="glass rounded-xl p-4 text-center metric-card">
+          <div class="glass rounded-xl p-4 text-center">
             <p class="text-2xl font-black text-verd-400 font-mono">${healthy}</p>
             <p class="text-xs text-surface-600">Healthy</p>
           </div>
-          <div class="glass rounded-xl p-4 text-center metric-card">
+          <div class="glass rounded-xl p-4 text-center">
             <p class="text-2xl font-black text-red-400 font-mono">${critical}</p>
             <p class="text-xs text-surface-600">Critical</p>
           </div>
@@ -166,19 +178,20 @@ window.ScanHistoryPage = {
                 const sevLabels = { none: 'Healthy', moderate: 'Moderate', high: 'Critical' };
                 const color = sevColors[scan.severity] || '#737373';
                 const label = sevLabels[scan.severity] || 'Unknown';
-                const date = new Date(scan.timestamp).toLocaleDateString('en-GB', {
+                const conditionName = scan.condition || scan.result || 'Unknown';
+                const date = new Date(scan.timestamp || scan.date).toLocaleDateString('en-GB', {
                     day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                 });
 
                 const card = document.createElement('div');
-                card.className = 'glass rounded-xl p-4 flex items-center gap-4 cursor-pointer hover:border-verd-500/20 group scan-tip-card';
+                card.className = 'glass rounded-xl p-4 flex items-center gap-4 cursor-pointer hover:border-verd-500/20 group';
                 card.innerHTML = `
           <div class="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style="background: ${color}15; color: ${color};">
             ${scan.severity === 'none' ? Icons.sized(Icons.checkCircle, 20) : Icons.sized(Icons.alertTriangle, 20)}
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-surface-200 truncate">${scan.condition || 'Unknown'}</p>
-            <p class="text-xs text-surface-600">${date} &middot; ${scan.fileName || 'Image'}</p>
+            <p class="text-sm font-bold text-surface-200 truncate">${conditionName}</p>
+            <p class="text-xs text-surface-600">${date} · ${scan.fileName || scan.crop || 'Image'}</p>
           </div>
           <div class="text-right flex-shrink-0">
             <p class="text-sm font-black font-mono" style="color: ${color};">${scan.confidence || 0}%</p>
@@ -190,7 +203,6 @@ window.ScanHistoryPage = {
           </div>
         `;
 
-                // Click card to view result
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.history-download') || e.target.closest('.history-delete')) return;
                     AppState.set('lastScanResult', scan);
@@ -218,7 +230,10 @@ window.ScanHistoryPage = {
                 btn.addEventListener('click', async (e) => {
                     e.stopPropagation();
                     const id = btn.dataset.id;
-                    await ScanHistoryDB.remove(id);
+                    // Delete from Supabase
+                    await DataService.deleteScan(id);
+                    // Delete from IndexedDB
+                    try { await ScanHistoryDB.remove(id); } catch (err) { /* ignore */ }
                     this._scans = this._scans.filter(s => s.id !== id);
                     this._renderList();
                     DOM.toast('Scan removed', 'success');

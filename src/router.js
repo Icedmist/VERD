@@ -26,10 +26,10 @@ window.Router = (() => {
         const app = document.getElementById('app');
         if (!app) return;
 
-        // Auth guard — if not authenticated, redirect to login
-        const publicRoutes = ['#/login', '#/register'];
+        // Auth guard — if not authenticated, redirect to home or login
+        const publicRoutes = ['#/', '#/login', '#/register'];
         if (!AppState.get('isAuthenticated') && !publicRoutes.includes(path)) {
-            window.location.hash = '#/login';
+            window.location.hash = '#/';
             return;
         }
 
@@ -66,10 +66,13 @@ window.Router = (() => {
                 app.innerHTML = LayoutComponent.render(AdminDashboardPage.render(), '#/admin');
                 LayoutComponent.bindEvents();
                 AdminDashboardPage.afterRender?.();
-            } else {
+            } else if (user) {
                 app.innerHTML = LayoutComponent.render(DashboardPage.render(), '#/dashboard');
                 LayoutComponent.bindEvents();
                 DashboardPage.afterRender?.();
+            } else {
+                app.innerHTML = HomePage.render();
+                HomePage.bindEvents();
             }
         });
 

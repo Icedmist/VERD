@@ -1,52 +1,12 @@
 // ═══════════════════════════════════════════
-//  Marketplace / Insights Page
+//  Marketplace / Insights Page — Data from Supabase
 // ═══════════════════════════════════════════
 
 window.MarketplacePage = {
-  render() {
-    const insights = [
-      {
-        icon: Icons.alertTriangle, title: 'Fall Armyworm Alert — Western Region',
-        description: 'Increased Fall Armyworm activity reported across maize fields in Western Kenya. Early detection is critical. Use push-pull farming technique with Desmodium as a companion crop. Apply Bt-based biological pesticides as a first line of defense.',
-        tags: ['Maize', 'Pest Control', 'Western Kenya'], severity: 'high', category: 'pest'
-      },
-      {
-        icon: Icons.sprout, title: 'Optimal Planting Window — March 2026',
-        description: 'The long rains season is approaching. Ideal planting period for maize begins mid-March. Prepare fields now with proper tillage and soil amendments. Ensure certified seed is sourced from KEPHIS-approved dealers.',
-        tags: ['Seasonal', 'Maize', 'Rice', 'Planning'], severity: 'medium', category: 'seasonal'
-      },
-      {
-        icon: Icons.beaker, title: 'Soil Health: Nitrogen Management',
-        description: 'After continuous maize cultivation, many fields in the region show declining nitrogen levels. Consider rotating with legumes (beans, cowpeas) to fix nitrogen naturally. Supplement with urea at 50kg/acre during top-dressing.',
-        tags: ['Soil Health', 'Fertilizer', 'Crop Rotation'], severity: 'medium', category: 'soil'
-      },
-      {
-        icon: Icons.droplets, title: 'Water Conservation Techniques',
-        description: 'With erratic rainfall patterns, implement water harvesting using tied ridges and contour planting. Mulching with crop residues reduces evaporation by up to 40%. Drip irrigation kits are available through county subsidies.',
-        tags: ['Irrigation', 'Climate Adaptation', 'Water'], severity: 'low', category: 'water'
-      },
-      {
-        icon: Icons.leaf, title: 'Tomato Early Blight Prevention',
-        description: 'Preventive measures are key for early blight control. Apply copper-based fungicides every 7-10 days during wet seasons. Ensure proper spacing (60cm x 45cm) for air circulation. Stake tomatoes to keep foliage off wet soil.',
-        tags: ['Tomatoes', 'Disease Prevention', 'Fungicide'], severity: 'medium', category: 'disease'
-      },
-      {
-        icon: Icons.wheat, title: 'Cassava Best Practices for 2026',
-        description: 'Plant TME 419 or NAROCASS 1 resistant varieties to combat Cassava Brown Streak Disease. Maintain 1m x 1m spacing. Harvest industrial varieties at 12 months and sweet varieties at 8-10 months for optimal starch content.',
-        tags: ['Cassava', 'Varieties', 'Best Practices'], severity: 'low', category: 'guide'
-      },
-      {
-        icon: Icons.barChart, title: 'Market Prices — Weekly Update',
-        description: 'Current farm-gate prices (per 90kg bag): Maize KES 3,500 (+5%), Beans KES 8,200 (-2%), Rice KES 5,800 (+3%). Best markets this week: Nairobi, Kisumu, Mombasa. Consider timing your sales with the price uptrend.',
-        tags: ['Market Prices', 'Economics', 'Sales'], severity: 'low', category: 'market'
-      },
-      {
-        icon: Icons.sun, title: 'Climate Advisory: Heat Stress Management',
-        description: 'Expected temperatures above 32 degrees C through mid-March. Irrigate early morning or late evening to reduce water loss. Consider shade netting for sensitive crops like lettuce and spinach. Monitor livestock for heat stress symptoms.',
-        tags: ['Climate', 'Heat', 'Irrigation'], severity: 'high', category: 'climate'
-      }
-    ];
+  _insights: [],
+  _loaded: false,
 
+  render() {
     const categories = [
       { id: 'all', label: 'All', icon: Icons.sized(Icons.activity, 14) },
       { id: 'pest', label: 'Pest Alerts', icon: Icons.sized(Icons.alertTriangle, 14) },
@@ -58,7 +18,7 @@ window.MarketplacePage = {
     ];
 
     return `
-      <div class="space-y-6 stagger">
+      <div class="space-y-6" id="marketplace-root">
         <div>
           <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Insights & Advisory</h1>
           <p class="text-surface-500 mt-1 text-sm">Localized agricultural intelligence and market data</p>
@@ -72,21 +32,34 @@ window.MarketplacePage = {
           `).join('')}
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4 stagger" id="insights-grid">
-          ${insights.map(i => `
-            <div class="insight-card" data-category="${i.category}">
-              ${CardComponent.advisory(i)}
-            </div>
-          `).join('')}
+        <div class="grid md:grid-cols-2 gap-4" id="insights-grid">
+          <div class="glass rounded-2xl p-5 animate-pulse"><div class="h-24 bg-surface-800 rounded-xl"></div></div>
+          <div class="glass rounded-2xl p-5 animate-pulse"><div class="h-24 bg-surface-800 rounded-xl"></div></div>
+          <div class="glass rounded-2xl p-5 animate-pulse"><div class="h-24 bg-surface-800 rounded-xl"></div></div>
+          <div class="glass rounded-2xl p-5 animate-pulse"><div class="h-24 bg-surface-800 rounded-xl"></div></div>
         </div>
       </div>
     `;
   },
 
-  bindEvents() {
+  async bindEvents() {
     LayoutComponent.setTitle('Insights', 'Agricultural advisory & market intelligence');
 
-    DOM.on('#category-filters', 'click', '.category-btn', (e, btn) => {
+    // Fetch insights from Supabase
+    try {
+      this._insights = await DataService.getInsights('all');
+      this._loaded = true;
+    } catch (e) {
+      console.warn('Failed to load insights:', e);
+      this._insights = [];
+      this._loaded = true;
+    }
+
+    // Render insights
+    this._renderInsights(this._insights);
+
+    // Category filter events
+    DOM.on('#category-filters', 'click', '.category-btn', async (e, btn) => {
       const category = btn.dataset.category;
 
       document.querySelectorAll('.category-btn').forEach(b => {
@@ -94,14 +67,58 @@ window.MarketplacePage = {
       });
       btn.className = 'category-btn inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-verd-600 text-white';
 
-      document.querySelectorAll('.insight-card').forEach(card => {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = '';
-          card.classList.add('fade-in');
-        } else {
-          card.style.display = 'none';
-        }
-      });
+      // Filter from already loaded data or re-fetch
+      if (category === 'all') {
+        this._renderInsights(this._insights);
+      } else {
+        const filtered = this._insights.filter(i => i.category === category);
+        this._renderInsights(filtered);
+      }
     });
+  },
+
+  _renderInsights(insights) {
+    const grid = document.getElementById('insights-grid');
+    if (!grid) return;
+
+    if (insights.length === 0) {
+      grid.innerHTML = `
+        <div class="md:col-span-2 glass rounded-2xl p-12 text-center">
+          <div class="w-16 h-16 rounded-2xl bg-surface-800 flex items-center justify-center text-surface-500 mx-auto mb-4">${Icons.sized(Icons.lightbulb, 28)}</div>
+          <h3 class="text-lg font-bold text-surface-300 mb-2">No Insights Available</h3>
+          <p class="text-surface-600 text-sm">Agricultural insights and advisory data will appear here once published.</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Map icon names from DB to actual icon SVGs
+    const iconMap = {
+      'alertTriangle': Icons.alertTriangle,
+      'sprout': Icons.sprout,
+      'beaker': Icons.beaker,
+      'droplets': Icons.droplets,
+      'leaf': Icons.leaf,
+      'wheat': Icons.wheat,
+      'barChart': Icons.barChart,
+      'sun': Icons.sun,
+      'heart': Icons.heart,
+      'shieldCheck': Icons.shieldCheck,
+    };
+
+    grid.innerHTML = insights.map(i => {
+      const icon = (typeof i.icon === 'string') ? (iconMap[i.icon] || Icons.leaf) : (i.icon || Icons.leaf);
+      return `
+        <div class="insight-card" data-category="${i.category}">
+          ${CardComponent.advisory({
+        icon,
+        title: i.title,
+        description: i.description,
+        tags: i.tags || [],
+        severity: i.severity
+      })}
+        </div>
+      `;
+    }).join('');
   }
 };

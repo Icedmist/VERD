@@ -91,6 +91,9 @@ window.LayoutComponent = {
               <p class="text-sm text-surface-600" id="page-subtitle"></p>
             </div>
             <div class="flex items-center gap-5">
+              <button id="theme-toggle-app" class="w-8 h-8 rounded-full bg-surface-800 flex items-center justify-center text-surface-400 hover:text-brand-cyan transition-colors" aria-label="Toggle Theme">
+                ${Icons.sun}
+              </button>
               <div class="flex items-center gap-2 text-xs font-medium ${isOnline ? 'text-verd-500' : 'text-red-400'}">
                 <div class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-verd-500' : 'bg-red-400'}"></div>
                 ${isOnline ? 'Online' : 'Offline'}
@@ -145,6 +148,12 @@ window.LayoutComponent = {
     document.getElementById('logout-btn')?.addEventListener('click', async () => {
       await AuthService.logout();
       window.location.hash = '#/login';
+    });
+
+    document.getElementById('theme-toggle-app')?.addEventListener('click', () => {
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
+      localStorage.setItem('verd-theme', isLight ? 'dark' : 'light');
     });
   },
 
