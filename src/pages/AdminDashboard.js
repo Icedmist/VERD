@@ -176,20 +176,20 @@ window.AdminDashboardPage = {
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
-                <tr class="border-b border-surface-800 text-left">
-                  <th class="pb-3 text-surface-600 font-medium text-xs uppercase tracking-wider">ID</th>
-                  <th class="pb-3 text-surface-600 font-medium text-xs uppercase tracking-wider">Crop</th>
-                  <th class="pb-3 text-surface-600 font-medium text-xs uppercase tracking-wider">Result</th>
-                  <th class="pb-3 text-surface-600 font-medium text-xs uppercase tracking-wider">Confidence</th>
-                  <th class="pb-3 text-surface-600 font-medium text-xs uppercase tracking-wider">Date</th>
+                <tr class="text-left opacity-60">
+                  <th class="pb-4 font-black text-[10px] uppercase tracking-widest">ID</th>
+                  <th class="pb-4 font-black text-[10px] uppercase tracking-widest">Crop</th>
+                  <th class="pb-4 font-black text-[10px] uppercase tracking-widest">Result</th>
+                  <th class="pb-4 font-black text-[10px] uppercase tracking-widest">Confidence</th>
+                  <th class="pb-4 font-black text-[10px] uppercase tracking-widest">Date</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-surface-800/30">
+              <tbody class="space-y-1">
                 ${scans.map(s => {
           const result = s.result || s.condition || 'Unknown';
           const isHealthy = result.toLowerCase().includes('healthy');
           return `
-                    <tr class="hover:bg-surface-900/30">
+                    <tr class="hover:bg-surface-800/30 transition-colors group cursor-pointer">
                       <td class="py-3 text-surface-500 font-mono text-xs">${s.id}</td>
                       <td class="py-3 text-surface-300">${s.crop || 'Unknown'}</td>
                       <td class="py-3"><span class="badge ${isHealthy ? 'badge-success' : 'badge-danger'}"><span class="w-1.5 h-1.5 rounded-full ${isHealthy ? 'bg-verd-400' : 'bg-red-400'}"></span>${result}</span></td>
@@ -238,8 +238,12 @@ window.AdminDashboardPage = {
 
     // Export button
     document.getElementById('admin-export-btn')?.addEventListener('click', () => {
-      DOM.toast('Export initiated — CSV will download shortly', 'info');
-      setTimeout(() => DOM.toast('Export complete', 'success'), 2000);
+      if (scans && scans.length > 0) {
+        ExportUtil.downloadCSV(scans, `VERD-All-Scans-${new Date().toISOString().split('T')[0]}.csv`);
+        DOM.toast('Export complete', 'success');
+      } else {
+        DOM.toast('No scans to export', 'warning');
+      }
     });
   }
 };

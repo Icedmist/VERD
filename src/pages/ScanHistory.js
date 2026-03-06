@@ -100,12 +100,19 @@ window.ScanHistoryPage = {
     render() {
         return `
       <div class="space-y-6" id="history-root">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-6 border-b border-surface-800/30">
           <div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Scan History</h1>
-            <p class="text-surface-500 mt-1 text-sm">View past scan results and track crop health over time</p>
+            <h1 class="text-3xl font-black text-white tracking-tight">Scan History</h1>
+            <p class="text-surface-500 mt-2 font-medium">Record of past diagnostic analyses</p>
           </div>
-          <a href="#/scan" class="btn btn-primary">${Icons.scan} New Scan</a>
+          <div class="flex items-center gap-3">
+             <button id="history-export-btn" class="btn btn-secondary px-5 py-2.5 h-11">
+               ${Icons.sized(Icons.download, 18)} Export All
+             </button>
+             <a href="#/scan" class="btn btn-primary px-5 py-2.5 h-11 shadow-lg shadow-verd-900/10">
+               ${Icons.sized(Icons.scan, 18)} New Scan
+             </a>
+          </div>
         </div>
 
         <div id="history-loading" class="text-center py-12">
@@ -123,6 +130,15 @@ window.ScanHistoryPage = {
         LayoutComponent.setTitle('History', 'Past scan results');
         await this.loadScans();
         this._renderList();
+
+        document.getElementById('history-export-btn')?.addEventListener('click', () => {
+            if (this._scans.length > 0) {
+                ExportUtil.downloadCSV(this._scans, `VERD-Scan-History-${new Date().toISOString().split('T')[0]}.csv`);
+                DOM.toast('History exported', 'success');
+            } else {
+                DOM.toast('No scans to export', 'warning');
+            }
+        });
     },
 
     _renderList() {

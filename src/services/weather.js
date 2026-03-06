@@ -3,7 +3,19 @@
 // ═══════════════════════════════════════════
 
 window.WeatherService = {
-    async getCurrent(location = 'Nairobi, Kenya') {
+    async getCurrent(coords = null) {
+        let location = 'Nairobi, Kenya';
+        if (coords) {
+            location = await LocationService.getCityName(coords.lat, coords.lon);
+        } else {
+            try {
+                const pos = await LocationService.getCurrentPosition();
+                location = await LocationService.getCityName(pos.lat, pos.lon);
+            } catch (e) {
+                console.warn('Geolocation failed, Using default:', e);
+            }
+        }
+
         await new Promise(r => setTimeout(r, 500));
 
         const conditions = [

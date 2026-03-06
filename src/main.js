@@ -25,7 +25,9 @@
         Router.init();
 
         if (!supabaseRestored && !demoRestored && !AppState.get('isAuthenticated')) {
-            window.location.hash = '#/login';
+            if (window.location.hash === '' || window.location.hash === '#/') {
+                window.location.hash = '#/home';
+            }
         }
 
         AppState.subscribe('isOnline', (isOnline) => {

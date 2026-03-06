@@ -55,17 +55,29 @@ window.LayoutComponent = {
             </div>
           </div>
 
-          <nav class="flex-1 py-3 px-3 space-y-0.5">
-            ${filteredNav.map(item => {
+          <nav class="flex-1 px-3 py-8 overflow-y-auto custom-scrollbar">
+            <div class="grid grid-cols-2 gap-3">
+              ${filteredNav.map(item => {
       const isActive = activeRoute === item.path || (item.path === '#/dashboard' && activeRoute === '#/');
       return `
-                <a href="${item.path}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium ${isActive ? 'nav-link-active text-verd-400' : 'nav-link text-surface-500 hover:text-surface-200'}">
-                  <span class="${isActive ? 'text-verd-400' : ''}">${item.icon}</span>
-                  <span>${item.label}</span>
-                  ${isActive ? '<div class="ml-auto w-1.5 h-1.5 rounded-full bg-verd-400"></div>' : ''}
-                </a>
-              `;
+                  <a href="${item.path}"
+                     class="flex flex-col items-center justify-center p-4 rounded-3xl transition-all duration-500 group border
+                     ${isActive ? 'nav-premium-active active-glow' : 'nav-premium-inactive bg-surface-950 hover:bg-surface-900 border-surface-900 hover:border-surface-800'}"
+                     data-nav-link="${item.path}"
+                     title="${item.label}">
+                    <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-2 transition-all duration-500
+                         ${isActive ? 'text-brand-cyan scale-110' : 'text-surface-500 group-hover:text-surface-300'}">
+                      ${Icons.sized(item.icon, 24)}
+                    </div>
+                    <span class="text-[9px] font-black uppercase tracking-[0.2em] transition-colors duration-300
+                          ${isActive ? 'text-white' : 'text-surface-600 group-hover:text-surface-400'}">
+                      ${item.label}
+                    </span>
+                    ${isActive ? '<div class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand-cyan shadow-[0_0_8px_var(--brand-cyan)] animate-pulse"></div>' : ''}
+                  </a>
+                `;
     }).join('')}
+            </div>
           </nav>
 
           <div class="p-4 border-t border-surface-800/30">
@@ -91,8 +103,8 @@ window.LayoutComponent = {
               <p class="text-sm text-surface-600" id="page-subtitle"></p>
             </div>
             <div class="flex items-center gap-5">
-              <button id="theme-toggle-app" class="w-8 h-8 rounded-full bg-surface-800 flex items-center justify-center text-surface-400 hover:text-brand-cyan transition-colors" aria-label="Toggle Theme">
-                ${Icons.sun}
+              <button id="theme-toggle-app" class="w-10 h-10 rounded-xl bg-surface-900 border border-surface-800 flex items-center justify-center text-surface-400 hover:text-brand-cyan hover:border-brand-cyan/30 transition-all" aria-label="Toggle Theme">
+                ${document.documentElement.getAttribute('data-theme') === 'light' ? Icons.moon || Icons.cloud : Icons.sun}
               </button>
               <div class="flex items-center gap-2 text-xs font-medium ${isOnline ? 'text-verd-500' : 'text-red-400'}">
                 <div class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-verd-500' : 'bg-red-400'}"></div>
@@ -150,10 +162,17 @@ window.LayoutComponent = {
       window.location.hash = '#/login';
     });
 
-    document.getElementById('theme-toggle-app')?.addEventListener('click', () => {
+    document.getElementById('theme-toggle-app')?.addEventListener('click', (e) => {
       const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      document.documentElement.setAttribute('data-theme', isLight ? 'dark' : 'light');
-      localStorage.setItem('verd-theme', isLight ? 'dark' : 'light');
+      const newTheme = isLight ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('verd-theme', newTheme);
+
+      // Update icon immediately
+      const btn = e.currentTarget;
+      if (btn) {
+        btn.innerHTML = newTheme === 'light' ? (Icons.moon || Icons.cloud) : Icons.sun;
+      }
     });
   },
 

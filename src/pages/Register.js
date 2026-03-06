@@ -49,6 +49,20 @@ window.RegisterPage = {
                 </select>
               </div>
 
+              <div>
+                <label class="block text-sm font-medium text-surface-400 mb-2">Location</label>
+                <div class="flex gap-2">
+                  <input id="reg-location" type="text" readonly
+                    class="flex-1 px-4 py-3 rounded-xl text-sm placeholder-surface-600 bg-surface-900/50 border-surface-800"
+                    placeholder="Click to detect location..." />
+                  <button type="button" id="detect-loc-btn" class="w-12 h-12 rounded-xl bg-surface-900 border border-surface-800 flex items-center justify-center text-brand-cyan hover:bg-brand-cyan/10 transition-all">
+                    ${Icons.sized(Icons.mapPin, 20)}
+                  </button>
+                </div>
+                <input id="reg-lat" type="hidden" />
+                <input id="reg-lon" type="hidden" />
+              </div>
+
               <div id="register-error" class="hidden text-red-400 text-sm bg-red-950/30 border border-red-900/20 rounded-xl p-3"></div>
 
               <button type="submit" id="register-submit-btn" class="btn btn-primary w-full py-3">
@@ -71,12 +85,40 @@ window.RegisterPage = {
     const form = document.getElementById('register-form');
     if (!form) return;
 
+    const detectBtn = document.getElementById('detect-loc-btn');
+    const locInput = document.getElementById('reg-location');
+    const latInput = document.getElementById('reg-lat');
+    const lonInput = document.getElementById('reg-lon');
+
+    detectBtn?.addEventListener('click', async () => {
+      detectBtn.innerHTML = '<span class="spin">' + Icons.sized(Icons.refresh, 18) + '</span>';
+      detectBtn.disabled = true;
+      try {
+        const pos = await LocationService.getCurrentPosition();
+        const city = await LocationService.getCityName(pos.lat, pos.lon);
+        locInput.value = city;
+        latInput.value = pos.lat;
+        lonInput.value = pos.lon;
+        DOM.toast('Location detected', 'success');
+      } catch (err) {
+        DOM.toast('Failed to detect location', 'error');
+        console.error(err);
+      } finally {
+        detectBtn.innerHTML = Icons.sized(Icons.mapPin, 20);
+        detectBtn.disabled = false;
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('reg-name').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
       const role = document.getElementById('reg-role').value;
+      const location = locInput.value;
+      const lat = latInput.value;
+      const lon = lonInput.value;
+
       const errorEl = document.getElementById('register-error');
       const btn = document.getElementById('register-submit-btn');
 
@@ -85,7 +127,7 @@ window.RegisterPage = {
       errorEl.classList.add('hidden');
 
       try {
-        await AuthService.register(email, password, name, role);
+        await AuthService.register(email, password, name, role, { name: location, lat, lon });
         DOM.toast('Account created successfully', 'success');
         window.location.hash = role === 'admin' ? '#/admin' : '#/dashboard';
       } catch (err) {

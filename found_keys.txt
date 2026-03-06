@@ -1,0 +1,98 @@
++  <!-- Supabase is loaded via npm module in src/services/supabase.ts -->
++        "@supabase/supabase-js": "^2.98.0"
++    "node_modules/@supabase/auth-js": {
++      "resolved": "https://registry.npmjs.org/@supabase/auth-js/-/auth-js-2.98.0.tgz",
++    "node_modules/@supabase/functions-js": {
++      "resolved": "https://registry.npmjs.org/@supabase/functions-js/-/functions-js-2.98.0.tgz",
++    "node_modules/@supabase/postgrest-js": {
++      "resolved": "https://registry.npmjs.org/@supabase/postgrest-js/-/postgrest-js-2.98.0.tgz",
++    "node_modules/@supabase/realtime-js": {
++      "resolved": "https://registry.npmjs.org/@supabase/realtime-js/-/realtime-js-2.98.0.tgz",
++    "node_modules/@supabase/storage-js": {
++      "resolved": "https://registry.npmjs.org/@supabase/storage-js/-/storage-js-2.98.0.tgz",
++    "node_modules/@supabase/supabase-js": {
++      "resolved": "https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.98.0.tgz",
++        "@supabase/auth-js": "2.98.0",
++        "@supabase/functions-js": "2.98.0",
++        "@supabase/postgrest-js": "2.98.0",
++        "@supabase/realtime-js": "2.98.0",
++        "@supabase/storage-js": "2.98.0"
++    "@supabase/supabase-js": "^2.98.0"
++        // Supabase
++        __supabase: any;
++        __supabaseConfigured: () => boolean;
++import './services/supabase';
++    if (window.__supabaseConfigured?.()) {
++//  Auth Service (Supabase + Demo Mode)
++            const supabase = window.__supabase;
++            const isConfigured = window.__supabaseConfigured?.();
++            if (supabase && isConfigured) {
++                supabase.auth.onAuthStateChange((event: string, session: any) => {
++            console.warn('VERD: Supabase Auth not configured, demo mode active');
++            const supabase = window.__supabase;
++            const isConfigured = window.__supabaseConfigured?.();
++            if (supabase && isConfigured) {
++                const { data, error } = await supabase.auth.signUp({
++            const supabase = window.__supabase;
++            const isConfigured = window.__supabaseConfigured?.();
++            if (supabase && isConfigured) {
++                const { data, error } = await supabase.auth.signInWithPassword({
++            const supabase = window.__supabase;
++            const isConfigured = window.__supabaseConfigured?.();
++            if (supabase && isConfigured) await supabase.auth.signOut();
++//  Database Service (Supabase + Demo Mode)
++        const supabase = window.__supabase;
++        const isConfigured = window.__supabaseConfigured?.();
++        if (!supabase || !user || !isConfigured) {
++            const { data, error } = await supabase
++        const supabase = window.__supabase;
++        const isConfigured = window.__supabaseConfigured?.();
++        if (!supabase || !user || !isConfigured) {
++            const { data, error } = await supabase
++        const supabase = window.__supabase;
++        const isConfigured = window.__supabaseConfigured?.();
++        if (!supabase || !isConfigured) {
++            const { data, error } = await supabase
++        const supabase = window.__supabase;
++        const isConfigured = window.__supabaseConfigured?.();
++        if (!supabase || !user || !isConfigured) {
++        const { error } = await supabase
+diff --git a/src/services/supabase.ts b/src/services/supabase.ts
++++ b/src/services/supabase.ts
++//  Supabase Client
++import { createClient } from '@supabase/supabase-js';
++//  SUPABASE CONFIG — Replace with your keys
++const SUPABASE_URL = 'https://ivfrcefsrihhekjwycfs.supabase.co';
++const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2ZnJjZWZzcmloaGVrand5Y2ZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MTYzNTksImV4cCI6MjA4ODE5MjM1OX0.pcvySPb_GkP_6l8OVNN0YFWw1wIN5rBtjR6t4o8xKKc';
++export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
++// Check if Supabase is configured (not placeholder keys)
++export function isSupabaseConfigured(): boolean {
++(window as any).__supabase = supabase;
++(window as any).__supabaseConfigured = isSupabaseConfigured;
+diff --git a/supabase/.gitignore b/supabase/.gitignore
++++ b/supabase/.gitignore
++# Supabase
+diff --git a/supabase/config.toml b/supabase/config.toml
++++ b/supabase/config.toml
++# https://supabase.com/docs/guides/local-development/cli/config
++# A string used to distinguish different Supabase projects on the same host. Defaults to the
++# working directory name when running `supabase init`.
++# Supports glob patterns relative to supabase directory: "./schemas/*.sql"
++# Supports glob patterns relative to supabase directory: "./seeds/*.sql"
++# Port to use for Supabase Studio.
++# OpenAI API Key to use for Supabase AI in the Supabase Studio.
++# Image transformation API is available to Supabase Pro plan.
++# Analytics Buckets is available to Supabase Pro plan.
++# Vector Buckets is available to Supabase Pro plan.
++# content_path = "./supabase/templates/invite.html"
++auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
++# Multi-factor-authentication is available to Supabase Pro plan.
++secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
++# Use Firebase Auth as a third-party provider alongside Supabase Auth.
++# Use Auth0 as a third-party provider alongside Supabase Auth.
++# Use AWS Cognito (Amplify) as a third-party provider alongside Supabase Auth.
++# Use Clerk as a third-party provider alongside Supabase Auth.
++# Obtain from https://clerk.com/setup/supabase
+diff --git a/supabase/migrations/20260304000000_initial_schema.sql b/supabase/migrations/20260304000000_initial_schema.sql
++++ b/supabase/migrations/20260304000000_initial_schema.sql
++-- 1. Create Profiles Table (extends Supabase Auth)

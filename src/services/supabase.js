@@ -21,7 +21,7 @@ window.SupabaseService = (() => {
     }
 
     // ─── Auth Helpers ───────────────────────────
-    async function signUp(email, password, name, role = 'farmer') {
+    async function signUp(email, password, name, role = 'farmer', location = null) {
         const client = getClient();
         if (!client) throw new Error('Supabase not initialized');
 
@@ -39,6 +39,7 @@ window.SupabaseService = (() => {
                 email,
                 display_name: name,
                 role,
+                location: location ? JSON.stringify(location) : null,
                 created_at: new Date().toISOString()
             });
         }
@@ -143,10 +144,16 @@ window.SupabaseService = (() => {
             .from('scans')
             .select('*')
             .eq('user_id', session.user.id)
-            .order('created_at', { ascending: false })
             .limit(count);
+
         if (error) { console.error('Error fetching scans:', error); return []; }
-        return data || [];
+
+        // Sort in memory as fallback
+        return (data || []).sort((a, b) => {
+            const da = new Date(a.created_at || a.timestamp || 0);
+            const db = new Date(b.created_at || b.timestamp || 0);
+            return db - da;
+        });
     }
 
     async function getAllScans(count = 50) {
@@ -156,10 +163,15 @@ window.SupabaseService = (() => {
         const { data, error } = await client
             .from('scans')
             .select('*')
-            .order('created_at', { ascending: false })
             .limit(count);
+
         if (error) { console.error('Error fetching all scans:', error); return []; }
-        return data || [];
+
+        return (data || []).sort((a, b) => {
+            const da = new Date(a.created_at || a.timestamp || 0);
+            const db = new Date(b.created_at || b.timestamp || 0);
+            return db - da;
+        });
     }
 
     async function deleteScan(id) {

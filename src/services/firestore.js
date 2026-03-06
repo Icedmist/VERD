@@ -5,50 +5,43 @@
 window.DataService = {
     /** Save scan result to Supabase */
     async saveScan(scanData) {
-        try {
-            const result = await SupabaseService.saveScan(scanData);
-            if (result) {
-                // Update local state
-                const scans = AppState.get('recentScans') || [];
-                scans.unshift({
-                    id: result.id || scanData.id,
-                    crop: scanData.fileName,
-                    date: scanData.timestamp,
-                    result: scanData.condition,
-                    confidence: scanData.confidence,
-                    severity: scanData.severity,
-                    condition: scanData.condition,
-                    fileName: scanData.fileName,
-                    timestamp: scanData.timestamp
-                });
-                AppState.set('recentScans', scans.slice(0, 20));
-                return result.id || scanData.id;
-            }
-        } catch (e) {
-            console.warn('Supabase save failed, storing locally:', e);
+        const ss = window.SupabaseService;
+        const user = AppState.get('user');
+
+        if (!ss || !user || user.uid.startsWith('demo-')) {
+            // Demo mode — store in state only
+            const scans = AppState.get('recentScans') || [];
+            scans.unshift({
+                id: scanData.id,
+                crop: scanData.fileName,
+                date: scanData.timestamp,
+                result: scanData.condition,
+                confidence: scanData.confidence,
+                imageUrl: ''
+            });
+            AppState.set('recentScans', scans.slice(0, 20));
+            return scanData.id;
         }
 
-        // Fallback: store in state only
-        const scans = AppState.get('recentScans') || [];
-        scans.unshift({
-            id: scanData.id,
-            crop: scanData.fileName,
-            date: scanData.timestamp,
-            result: scanData.condition,
-            confidence: scanData.confidence,
-            severity: scanData.severity,
-            condition: scanData.condition,
-            fileName: scanData.fileName,
-            timestamp: scanData.timestamp
-        });
-        AppState.set('recentScans', scans.slice(0, 20));
-        return scanData.id;
+        try {
+            const result = await ss.saveScan(scanData);
+            return result?.id || scanData.id;
+        } catch (e) {
+            console.error('Failed to save scan:', e);
+            throw e;
+        }
     },
 
     /** Get recent scans for current user */
     async getRecentScans(count = 10) {
+        const ss = window.SupabaseService;
+        const user = AppState.get('user');
+        if (!ss || !user || user.uid.startsWith('demo-')) {
+            return AppState.get('recentScans') || [];
+        }
+
         try {
-            const scans = await SupabaseService.getRecentScans(count);
+            const scans = await ss.getRecentScans(count);
             if (scans && scans.length > 0) {
                 // Normalize field names from DB (snake_case) to camelCase
                 return scans.map(s => ({
@@ -69,15 +62,19 @@ window.DataService = {
                 }));
             }
         } catch (e) {
-            console.warn('Failed to fetch scans from Supabase:', e);
+            console.error('Failed to load scans:', e);
         }
         return AppState.get('recentScans') || [];
     },
 
     /** Get all scans (admin) */
     async getAllScans(count = 50) {
+        const ss = window.SupabaseService;
+        if (!ss) {
+            return AppState.get('recentScans') || [];
+        }
         try {
-            const scans = await SupabaseService.getAllScans(count);
+            const scans = await ss.getAllScans(count);
             if (scans && scans.length > 0) {
                 return scans.map(s => ({
                     id: s.id,
@@ -92,7 +89,7 @@ window.DataService = {
                 }));
             }
         } catch (e) {
-            console.warn('Failed to fetch all scans:', e);
+            console.error('Failed to load all scans:', e);
         }
         return AppState.get('recentScans') || [];
     },

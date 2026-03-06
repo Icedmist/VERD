@@ -2,7 +2,7 @@
 //  VERD Service Worker — Offline Caching
 // ═══════════════════════════════════════════
 
-const CACHE_NAME = 'verd-v2';
+const CACHE_NAME = 'verd-v3';
 const ASSETS = [
     '/',
     '/index.html',

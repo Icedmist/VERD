@@ -18,7 +18,7 @@ window.Router = (() => {
 
     /** Resolve current route */
     function resolve() {
-        const hash = window.location.hash || '#/';
+        const hash = window.location.hash || '#/home';
         const path = hash.split('?')[0]; // ignore query params
         currentRoute = path;
         AppState.set('currentRoute', path);
@@ -27,9 +27,9 @@ window.Router = (() => {
         if (!app) return;
 
         // Auth guard — if not authenticated, redirect to home or login
-        const publicRoutes = ['#/', '#/login', '#/register'];
+        const publicRoutes = ['#/', '#/home', '#/login', '#/register'];
         if (!AppState.get('isAuthenticated') && !publicRoutes.includes(path)) {
-            window.location.hash = '#/';
+            window.location.hash = '#/home';
             return;
         }
 
@@ -63,17 +63,22 @@ window.Router = (() => {
         on('#/', (app) => {
             const user = AppState.get('user');
             if (user?.role === 'admin') {
-                app.innerHTML = LayoutComponent.render(AdminDashboardPage.render(), '#/admin');
-                LayoutComponent.bindEvents();
-                AdminDashboardPage.afterRender?.();
+                window.location.hash = '#/admin';
             } else if (user) {
-                app.innerHTML = LayoutComponent.render(DashboardPage.render(), '#/dashboard');
-                LayoutComponent.bindEvents();
-                DashboardPage.afterRender?.();
+                window.location.hash = '#/dashboard';
             } else {
-                app.innerHTML = HomePage.render();
-                HomePage.bindEvents();
+                window.location.hash = '#/home';
             }
+        });
+
+        on('#/home', (app) => {
+            const user = AppState.get('user');
+            if (user) {
+                window.location.hash = user.role === 'admin' ? '#/admin' : '#/dashboard';
+                return;
+            }
+            app.innerHTML = HomePage.render();
+            HomePage.bindEvents();
         });
 
         on('#/dashboard', (app) => {

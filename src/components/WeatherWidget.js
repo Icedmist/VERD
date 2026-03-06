@@ -27,10 +27,13 @@ window.WeatherWidget = {
       container.innerHTML = `
         <div class="glass rounded-2xl p-5 space-y-4 fade-in">
           <div class="flex items-center justify-between">
-            <h3 class="text-sm font-semibold text-surface-400 uppercase tracking-wider flex items-center gap-2">
-              <span class="text-verd-500">${Icons.thermometer}</span> Weather
+            <h3 class="text-xs font-black text-surface-400 uppercase tracking-[0.2em] flex items-center gap-2">
+              <span class="text-brand-cyan">${Icons.thermometer}</span> Environment
             </h3>
-            <span class="text-xs text-surface-600">${weather.location}</span>
+            <div class="flex items-center gap-2 px-2 py-1 rounded-lg bg-brand-cyan/5 border border-brand-cyan/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-cyan shadow-[0_0_8px_var(--brand-cyan)]"></span>
+              <span class="text-[10px] font-black text-brand-cyan uppercase tracking-widest">${weather.location}</span>
+            </div>
           </div>
 
           <div class="flex items-center justify-between">
