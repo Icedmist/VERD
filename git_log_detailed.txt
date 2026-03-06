@@ -1,0 +1,9 @@
+d143047 Bot bot@example.com feat: premium homepage redesign phase 2 with solid neural animation, typewriter effect and feature sections
+9149b94 Bot bot@example.com feat: premium homepage redesign phase 2 with solid neural animation, typewriter effect and feature sections
+c7c695e Bot bot@example.com feat: integrate Supabase backend, PlantVillage CNN training pipeline, and Bitget-inspired UI
+0eadedc icedmist pharmnaseer@gmail.com feat: Premium landing page with hero, features, how-it-works, tech stack, CTA
+f5db671 icedmist pharmnaseer@gmail.com docs: Update WALKTHROUGH.md + CHANGELOG.md with v1.3.0 standalone features
+dab4c24 icedmist pharmnaseer@gmail.com feat: PWA + Scan History + Download Report + WhatsApp Share
+a1edced icedmist pharmnaseer@gmail.com docs: Add comprehensive WALKTHROUGH.md and CHANGELOG.md
+1e8149c icedmist pharmnaseer@gmail.com feat: Premium UI overhaul + neural net animation + voice scanner
+fab1e9b icedmist pharmnaseer@gmail.com feat: VERD v1 - full app with MobileNet integration

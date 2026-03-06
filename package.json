@@ -5,15 +5,16 @@
   "main": "index.html",
   "scripts": {
     "dev": "npx -y live-server --port=3000 --no-browser",
+    "build": "echo 'Build complete'",
     "train": "node train_model.js",
     "seed": "node seed_supabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
-    "@tensorflow/tfjs": "^4.17.0",
-    "@tensorflow/tfjs-node": "^4.22.0"
+    "@tensorflow/tfjs": "^4.17.0"
   },
   "devDependencies": {
+    "@tensorflow/tfjs-node": "^4.22.0",
     "live-server": "^1.2.2"
   },
   "keywords": [
