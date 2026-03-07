@@ -18,17 +18,22 @@
         // Initialize auth
         AuthService.init();
 
-        // Try to restore Supabase session first, then demo session
-        const supabaseRestored = await AuthService.restoreSupabaseSession();
-        const demoRestored = !supabaseRestored && AuthService.restoreDemoSession();
-
+        // 1. Initialize router early so landing page can render immediately
         Router.init();
 
-        if (!supabaseRestored && !demoRestored && !AppState.get('isAuthenticated')) {
-            if (window.location.hash === '' || window.location.hash === '#/') {
-                window.location.hash = '#/home';
+        // 2. Try to restore sessions in background
+        (async () => {
+            const supabaseRestored = await AuthService.restoreSupabaseSession();
+            const demoRestored = !supabaseRestored && AuthService.restoreDemoSession();
+
+            // Only redirect if we ARE on the root and NO session exists
+            if (!supabaseRestored && !demoRestored && !AppState.get('isAuthenticated')) {
+                const h = window.location.hash;
+                if (h === '' || h === '#/') {
+                    window.location.hash = '#/home';
+                }
             }
-        }
+        })();
 
         AppState.subscribe('isOnline', (isOnline) => {
             if (isOnline) {
