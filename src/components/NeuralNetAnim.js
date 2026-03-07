@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════
-//  Neural Network Scan Animation (Solid Edition)
+//  Neural Network Scan Animation (Premium Edition)
 // ═══════════════════════════════════════════
 //  Canvas-based animated visualization of neural
 //  network inference — nodes, connections, particles
@@ -19,6 +19,18 @@ window.NeuralNetAnim = class NeuralNetAnim {
         this.sparks = [];
         this.frameId = null;
         this.t = 0;
+
+        // Brand Palette (Standardized)
+        this.colors = {
+            cyan: '#00E5FF',
+            blue: '#007BFF',
+            cyanGlow: 'rgba(0, 229, 255, 0.4)',
+            blueGlow: 'rgba(0, 123, 255, 0.4)',
+            nodeBase: 'rgba(0, 229, 255, 0.2)',
+            nodeActive: 'rgba(0, 229, 255, 1.0)',
+            lineBase: 'rgba(255, 255, 255, 0.05)',
+            lineActive: 'rgba(0, 229, 255, 0.4)'
+        };
 
         this._setupLayers();
         this._resize();
@@ -61,20 +73,20 @@ window.NeuralNetAnim = class NeuralNetAnim {
             const nodeGap = (this.H - padY * 2) / (count + 1);
             for (let ni = 0; ni < count; ni++) {
                 const y = padY + (ni + 1) * nodeGap;
-                this.nodes.push({ x, y, layer: li, label, radius: 4, energy: 0, active: false });
+                this.nodes.push({ x, y, layer: li, label, radius: 3, energy: 0, active: false });
             }
         });
 
-        // Connect adjacent layers (moderately dense)
+        // Connect adjacent layers (Optimized density for premium feel)
         for (let li = 0; li < layers.length - 1; li++) {
             const fromNodes = this.nodes.filter(n => n.layer === li);
             const toNodes = this.nodes.filter(n => n.layer === li + 1);
             fromNodes.forEach(from => {
-                // Connect to 3-5 random nodes in next layer for "solid" look
-                const connectCount = Math.min(toNodes.length, 3 + Math.floor(Math.random() * 3));
+                // Connect to a few random nodes in next layer
+                const connectCount = Math.min(toNodes.length, 2 + Math.floor(Math.random() * 2));
                 const shuffled = [...toNodes].sort(() => Math.random() - 0.5);
                 for (let i = 0; i < connectCount; i++) {
-                    this.connections.push({ from, to: shuffled[i], weight: 0.5 + Math.random() * 0.5 });
+                    this.connections.push({ from, to: shuffled[i], weight: 0.3 + Math.random() * 0.7 });
                 }
             });
         }
@@ -110,50 +122,52 @@ window.NeuralNetAnim = class NeuralNetAnim {
     }
 
     _update() {
-        // In idle mode (homepage), simulate a scanning wave
+        // In idle mode (homepage), simulate a smooth scanning wave
         if (this.phase === 'scanning' && this.progress === 0 && !window._scanProgressCallback) {
-            const wavePos = (Math.sin(this.t * 0.5) + 1) / 2; // 0-1 wave
+            const wavePos = (Math.sin(this.t * 0.4) + 1) / 2; // Slower, smoother wave
             this.progress = wavePos;
         }
 
         const activeLayer = Math.floor(this.progress * (8 - 1));
 
-        // Activate nodes based on progress
+        // Activate nodes based on progress with smooth energy transitions
         this.nodes.forEach(n => {
             n.active = n.layer <= activeLayer;
             if (n.active) {
-                n.energy = Math.min(1, n.energy + 0.08);
+                n.energy = Math.min(1, n.energy + 0.06);
             } else {
-                n.energy = Math.max(0.1, n.energy - 0.03); // Solid background energy
+                n.energy = Math.max(0.05, n.energy - 0.02);
             }
         });
 
-        // Spawn particles along active connections (More dense for "solid")
-        if (Math.random() < 0.5) {
+        // Spawn high-speed particles along active connections
+        if (Math.random() < 0.4) {
             const activeConns = this.connections.filter(c => c.from.active && c.to.layer <= activeLayer + 1);
             if (activeConns.length > 0) {
                 const conn = activeConns[Math.floor(Math.random() * activeConns.length)];
                 this.particles.push({
                     x: conn.from.x, y: conn.from.y,
                     tx: conn.to.x, ty: conn.to.y,
-                    progress: 0, speed: 0.02 + Math.random() * 0.03,
-                    size: 2 + Math.random() * 2,
-                    alpha: 1.0
+                    progress: 0,
+                    speed: 0.03 + Math.random() * 0.04,
+                    size: 1.5 + Math.random() * 1.5,
+                    alpha: 1.0,
+                    color: Math.random() > 0.5 ? this.colors.cyan : this.colors.blue
                 });
             }
         }
 
-        // Spawn sparks at active nodes
-        if (Math.random() < 0.2) {
+        // Spawn micro-sparks at active nodes
+        if (Math.random() < 0.15) {
             const activeNodes = this.nodes.filter(n => n.active);
             if (activeNodes.length > 0) {
                 const node = activeNodes[Math.floor(Math.random() * activeNodes.length)];
                 this.sparks.push({
                     x: node.x, y: node.y,
-                    vx: (Math.random() - 0.5) * 4,
-                    vy: (Math.random() - 0.5) * 4,
-                    life: 1, decay: 0.02 + Math.random() * 0.02,
-                    size: 1.5 + Math.random() * 2
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    life: 1, decay: 0.03 + Math.random() * 0.03,
+                    size: 1 + Math.random() * 1.5
                 });
             }
         }
@@ -161,10 +175,11 @@ window.NeuralNetAnim = class NeuralNetAnim {
         // Update particles
         this.particles = this.particles.filter(p => {
             p.progress += p.speed;
-            p.x = p.x + (p.tx - p.x) * p.speed * 4;
-            p.y = p.y + (p.ty - p.y) * p.speed * 4;
+            const ease = 1 - Math.pow(1 - p.progress, 3); // Cubic ease out
+            p.x = p.x + (p.tx - p.x) * ease * 0.2;
+            p.y = p.y + (p.ty - p.y) * ease * 0.2;
             p.alpha = 1 - p.progress;
-            return p.progress < 1;
+            return p.progress < 0.95;
         });
 
         // Update sparks
@@ -175,10 +190,10 @@ window.NeuralNetAnim = class NeuralNetAnim {
             return s.life > 0;
         });
 
-        // Completion pulse
+        // Completion gentle pulse
         if (this.phase === 'complete') {
             this.nodes.forEach(n => {
-                n.energy = 0.8 + Math.sin(this.t * 4 + n.layer) * 0.2;
+                n.energy = 0.7 + Math.sin(this.t * 3 + n.layer) * 0.3;
             });
         }
     }
@@ -187,21 +202,24 @@ window.NeuralNetAnim = class NeuralNetAnim {
         const ctx = this.ctx;
         ctx.clearRect(0, 0, this.W, this.H);
 
-        // Background glow
-        const grad = ctx.createRadialGradient(this.W / 2, this.H / 2, 0, this.W / 2, this.H / 2, this.W * 0.7);
-        grad.addColorStop(0, 'rgba(26, 175, 99, 0.05)');
+        // Subdued background radial glow (Cyan)
+        const grad = ctx.createRadialGradient(this.W / 2, this.H / 2, 0, this.W / 2, this.H / 2, this.W * 0.8);
+        grad.addColorStop(0, 'rgba(0, 229, 255, 0.03)');
         grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, this.W, this.H);
 
-        // Draw connections (Solid lines)
+        // Draw connections (Thin, sophisticated lines)
         this.connections.forEach(c => {
             const energy = Math.min(c.from.energy, c.to.energy || 0);
-            const baseAlpha = 0.15;
-            const activeAlpha = 0.6;
+            const baseAlpha = 0.05;
+            const activeAlpha = 0.3;
 
-            ctx.strokeStyle = `rgba(26, 175, 99, ${baseAlpha + energy * (activeAlpha - baseAlpha)})`;
-            ctx.lineWidth = 1 + energy * 2;
+            ctx.strokeStyle = energy > 0.1
+                ? `rgba(0, 229, 255, ${baseAlpha + energy * (activeAlpha - baseAlpha)})`
+                : this.colors.lineBase;
+
+            ctx.lineWidth = 0.5 + energy * 1.5;
 
             ctx.beginPath();
             ctx.moveTo(c.from.x, c.from.y);
@@ -209,11 +227,11 @@ window.NeuralNetAnim = class NeuralNetAnim {
             ctx.stroke();
         });
 
-        // Draw particles
+        // Draw particles with glow
         this.particles.forEach(p => {
-            ctx.fillStyle = `rgba(26, 255, 130, ${p.alpha})`;
-            ctx.shadowColor = 'rgba(26, 255, 130, 0.9)';
-            ctx.shadowBlur = 10;
+            ctx.fillStyle = p.color;
+            ctx.shadowColor = p.color;
+            ctx.shadowBlur = 8;
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fill();
@@ -222,50 +240,54 @@ window.NeuralNetAnim = class NeuralNetAnim {
 
         // Draw sparks
         this.sparks.forEach(s => {
-            ctx.fillStyle = `rgba(26, 255, 130, ${s.life * 0.8})`;
+            ctx.fillStyle = `rgba(0, 229, 255, ${s.life * 0.6})`;
             ctx.beginPath();
             ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
             ctx.fill();
         });
 
-        // Draw nodes (More prominent)
+        // Draw nodes (Refined dots with outer rings)
         this.nodes.forEach(n => {
             const e = n.energy;
 
-            // Glow
-            ctx.shadowColor = `rgba(26, 175, 99, ${0.2 + e * 0.8})`;
-            ctx.shadowBlur = 10 + e * 15;
+            // Glow for active nodes
+            if (e > 0.2) {
+                ctx.shadowColor = `rgba(0, 229, 255, ${0.1 + e * 0.4})`;
+                ctx.shadowBlur = 8 + e * 10;
+            }
 
-            // Outer ring
-            ctx.strokeStyle = `rgba(26, 255, 130, ${0.4 + e * 0.6})`;
-            ctx.lineWidth = 2;
+            // Outer ring (Transparent to Active Cyan)
+            ctx.strokeStyle = `rgba(0, 229, 255, ${0.1 + e * 0.5})`;
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.arc(n.x, n.y, n.radius + 3 + e * 3, 0, Math.PI * 2);
+            ctx.arc(n.x, n.y, n.radius + 2 + e * 4, 0, Math.PI * 2);
             ctx.stroke();
 
-            // Core (Solid)
-            ctx.fillStyle = `rgba(26, 255, 130, ${0.6 + e * 0.4})`;
+            // Core
+            ctx.fillStyle = e > 0.5 ? this.colors.cyan : `rgba(255, 255, 255, ${0.1 + e * 0.4})`;
             ctx.beginPath();
-            ctx.arc(n.x, n.y, n.radius + e * 2, 0, Math.PI * 2);
+            ctx.arc(n.x, n.y, n.radius + e, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.shadowBlur = 0;
         });
 
-        // Layer labels at bottom (Solid)
-        if (this.W > 400) {
-            const labels = ['Input', 'Conv1', 'Conv2', 'Pool', 'Conv3', 'FC1', 'FC2', 'Output'];
+        // Layer labels at bottom (Premium Monospace)
+        if (this.W > 450) {
+            const labels = ['INPUT', 'CONV_1', 'CONV_2', 'POOL', 'CONV_3', 'FC_1', 'FC_2', 'OUTPUT'];
             const padX = 50;
             const gap = (this.W - padX * 2) / (labels.length - 1);
-            ctx.font = 'bold 10px Inter, sans-serif';
+            ctx.font = '900 8px "Inter", monospace';
             ctx.textAlign = 'center';
+            ctx.letterSpacing = '1px';
+
             labels.forEach((label, i) => {
                 const x = padX + i * gap;
                 const activeLayer = Math.floor(this.progress * 7);
                 ctx.fillStyle = i <= activeLayer
-                    ? '#00E5FF'
-                    : 'rgba(255, 255, 255, 0.4)';
-                ctx.fillText(label.toUpperCase(), x, this.H - 8);
+                    ? this.colors.cyan
+                    : 'rgba(255, 255, 255, 0.2)';
+                ctx.fillText(label, x, this.H - 6);
             });
         }
     }

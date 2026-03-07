@@ -2,7 +2,7 @@
 //  Service Worker — Offline-First Caching
 // ═══════════════════════════════════════════
 
-const CACHE_NAME = 'agriscan-v1';
+const CACHE_NAME = 'verd-v4';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
