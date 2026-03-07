@@ -190,7 +190,7 @@ window.ScannerService = {
             if (typeof tf !== 'undefined') {
                 try {
                     // Attempt to load the trained PlantVillage model
-                    this._model = await tf.loadLayersModel('/model/model.json');
+                    this._model = await tf.loadLayersModel('model/model.json');
                     console.log('VERD: Custom PlantVillage model loaded');
                 } catch (e) {
                     console.info('VERD: Custom model not found, using classification heuristics');
